@@ -1,47 +1,49 @@
-let usersData = [];
+let usersData = []; 
 
-document.getElementById("getUser").addEventListener("click", async () => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  const result = await response.json();
+function displayUsers(users) {
+  document.getElementById("users").innerHTML = "";
 
-  usersData = result;
-
-  document.getElementById("users").textContent = "";
-
-  usersData.forEach((person) => {
+  users.forEach((user) => {
     const li = document.createElement("li");
 
     li.textContent =
-      "名前: " + person.name +
-      " / メール: " + person.email +
-      " / 会社: " + person.company.name;
+      "名前: " + user.name +
+      " / メール: " + user.email +
+      " / 会社: " + user.company.name;
 
     document.getElementById("users").appendChild(li);
   });
-});
+}
 
-document.getElementById("search").addEventListener("click", () => {
-  const userName = document.getElementById("userName").value;
+document.getElementById("getUser").addEventListener("click", async () => {
+  try {
+const response = await fetch("https://jsonplaceholder.typicode.com/users");
 
-  const searchedUsers = usersData.filter((user) => {
-    return user.name.includes(userName);
-  });
+if (!response.ok) {
+  throw new Error("ユーザー情報の取得に失敗しました");
+}
 
-  document.getElementById("users").innerHTML = "";
-
-  if (searchedUsers.length >= 1) {
-    searchedUsers.forEach((user) => {
-      const li = document.createElement("li");
-
-      li.textContent =
-        "名前: " + user.name +
-        " / メール: " + user.email +
-        " / 会社: " + user.company.name;
-
-      document.getElementById("users").appendChild(li);
-    });
-  } else {
-    document.getElementById("users").textContent =
-      "該当するユーザーはいません";
+const result = await response.json(); 
+  
+  usersData = result;  
+  
+ displayUsers(usersData); 
+  } catch (error) {
+document.getElementById("users").textContent = "ユーザー情報の取得に失敗しました";
   }
+});
+ 
+document.getElementById("search").addEventListener("click", () => { 
+  const userName = document.getElementById("userName").value; 
+ 
+  const searchedUsers = usersData.filter((user) => { 
+    return user.name.includes(userName); 
+  }); 
+ 
+  if (searchedUsers.length >= 1) { 
+    displayUsers(searchedUsers);
+  } else { 
+    document.getElementById("users").textContent = 
+      "該当するユーザーはいません"; 
+  } 
 });
